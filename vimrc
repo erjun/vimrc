@@ -258,31 +258,36 @@ else
     call vundle#rc()
     " let Vundle manage Vundle
     Bundle 'gmarik/vundle'
-    " common
         " indent-guides
     Bundle 'nathanaelkane/vim-indent-guides'
+        " taglist for vim
+    Bundle "taglist.vim"
         " comment
     Bundle 'scrooloose/nerdcommenter'
         " Easy color scheme browsing 
     Bundle 'sjas/csExplorer'
         " outline 
     Bundle 'VOoM'
-        " vimwiki
+        " vimwiki for vim
     Bundle 'vimwiki'
         " beautify html,css,javascript,json files 
     Bundle 'michalliu/sourcebeautify.vim'
         " Snippet
     Bundle 'msanders/snipmate.vim'
-        " AutoComplPop
+        " AutoComplPop for vim
     Bundle 'AutoComplPop'
         " colorscheme
     Bundle 'molokai'
     " front-end web developer
     Bundle 'mattn/zencoding-vim' 
-    " python
         "code check
     Bundle 'kevinw/pyflakes-vim'
-    " c
+        " jedi-vim for vim
+    Bundle 'jedi-vim'
+        " Pydiction for vim
+    Bundle 'Pydiction'
+        " pydoc for vim
+    Bundle 'pydoc.vim'
     "lisp
     Bundle 'slimv.vim'
 endif
@@ -290,20 +295,31 @@ endif
 "对齐线 宽度1
 let g:indent_guides_guide_size=1
 
+"let g:jedi#popup_select_first = 0
+
 "viki
+if has('win32') || has('win64')
 let g:vimwiki_list = [{'path': 'D:/Dropbox/vimwiki/',
 \ 'path_html': 'D:/Dropbox/html/',
 \ 'html_header': 'D:/Dropbox/template/header.tpl',}]
+endif
 let g:vimwiki_use_mouse = 1
 " 是否开启按语法折叠  会让文件比较慢
 "let g:vimwiki_folding = 1
 " 是否在计算字串长度时用特别考虑中文字符
 let g:vimwiki_CJK_length = 1
 
+" taglist pulg
 nnoremap <leader>ot :TlistToggle<CR>
+if has('win32') || has('win64')
+    let Tlist_Ctags_Cmd='C:/Users/max/.vim/ctags58/ctags.exe'
+elseif has('unix')
+    "let Tlist_Ctags_Cmd='$HOME/.vim/ctags58/ctags.exe'
+endif
+let Tlist_Process_File_Always=1
 let Tlist_Use_Right_Window=1
-set tags=D://
 
+let g:pydiction_location = '~/.vim/bundle/pyflakes-vim/complete-dict'
 
 " => 函数 (FUNCTION){{{1
 "======================
@@ -499,7 +515,6 @@ fu! CssAuto()
 endf
 " html Auto {{{2
 fu! HtmlAuto()
-    call TagChecker()
     exe g:dict_dir."html5.dict"
 endf
 " python auto {{{2
@@ -570,3 +585,4 @@ fu! Js()
 
     silent! exe 'make'
 endf
+
