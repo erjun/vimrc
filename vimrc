@@ -36,7 +36,6 @@ filetype indent on
 " 当文件在外部修改而vim没有修改则重新载入
 set autoread
 
-
 " => 可视操作{{{1
 "======================
 "光标上下两侧最少保留的屏幕行数。
@@ -121,7 +120,10 @@ set nocompatible "不要vim模仿vi模式
 
 "_vimrc保存后，自动重载
 autocmd! bufwritepost _vimrc source $vim/_vimrc
+" 自动最大化
 autocmd GUIEnter * simalt ~x
+"自动透明
+au GUIEnter * call libcallnr("vimtweak.dll", "SetAlpha", 240)
 
 "失去焦点就自动保存  
 "au FocusLost * silent! up 
@@ -147,10 +149,9 @@ colorscheme molokai
 if has('gui_running')
 
     "隐藏工具栏
-    "set guioptions-=T
+    set guioptions-=T
     "隐藏菜单栏
-    "set guioptions-=m
-
+    set guioptions-=m
     " 高亮光标所在的行
     set cursorline
 
@@ -158,8 +159,8 @@ if has('gui_running')
         "windows兼容配置
         source $VIMRUNTIME/mswin.vim 
         "字体(font)
-        "exe 'set guifont='.iconv('Consolas', &enc, 'gbk').':h12:i:cANSI'
-        exe 'set guifont='.iconv('Envy_Code_R', &enc, 'gbk').':h12:cDEFAULT'
+        exe 'set guifont='.iconv('Consolas', &enc, 'gbk').':h12:i:cANSI'
+        "exe 'set guifont='.iconv('Envy_Code_R', &enc, 'gbk').':h12:cDEFAULT'
         set gfw=幼圆:h11:cGB2312
     endif
 endif
@@ -172,6 +173,7 @@ if has('netbeans_intg')
     set autochdir
 endif
 "au FileType html,css,javascript :call AutoClose()
+
 
 "设置字典 
 let g:dict_dir="set dictionary+=$vim/vimfiles/dict/"
@@ -220,7 +222,7 @@ map <leader>rr :call RestoreSess()<cr>
 nnoremap <leader>wn :call Lilydjwg_toggle_number()<CR>
 
 "用火狐打开链接
-nmap <leader>tf :call Lilydjwg_open_url()<CR>
+nmap <leader>tf :call Chrome_open_url()<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => 编码(CODING){{{1
 "======================
@@ -284,6 +286,9 @@ else
     Bundle 'kevinw/pyflakes-vim'
         " jedi-vim for vim
     Bundle 'jedi-vim'
+        " js
+    Bundle 'jshint.vim'
+    "Bundle 'syntastic'
         " Pydiction for vim
     Bundle 'Pydiction'
         " pydoc for vim
@@ -320,6 +325,13 @@ let Tlist_Process_File_Always=1
 let Tlist_Use_Right_Window=1
 
 let g:pydiction_location = '~/.vim/bundle/pyflakes-vim/complete-dict'
+
+" syntastic
+"在打开文件的时候检查
+"let g:syntastic_check_on_open=1
+"phpcs，tab 4个空格，编码参考使用CodeIgniter风格
+"let g:syntastic_phpcs_conf = "--tab-width=4 --standard=CodeIgniter"
+
 
 " => 函数 (FUNCTION){{{1
 "======================
@@ -521,19 +533,17 @@ endf
 fu! PythonAuto()
     set omnifunc=pythoncomplete#Complete
 endf
-"{{{2 => => 用火狐打开链接{{{2
-fu! Lilydjwg_open_url()
-  let s:url = Lilydjwg_get_pattern_at_cursor('\v(https?://|ftp://|file:/{3}|www\.)(\w|[.-])+(:\d+)?(/(\w|[~@#$%^&+=/.?:-])+)?')
+"{{{2 => => 用chrome打开当前文件{{{2
+fu! Chrome_open_url()
+  let s:url = expand('%:p')
   if s:url == ""
     echohl WarningMsg
-    echomsg '在光标处未发现URL！'
+    echomsg 'Requested URL not found'
     echohl None
   else
-    echo '打开URL：' . s:url
+    echo 'open URL:' . s:url
     if has("win32") || has("win64")
-      " start 不是程序，所以无效。并且，cmd 只能使用双引号
-      " call system("start '" . s:url . "'")
-      call system("cmd /q /c start \"" . s:url . "\"")
+      exec "silent !start chrome file:" . s:url 
     elseif has("mac")
       call system("open '" . s:url . "'")
     else
